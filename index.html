@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>漢字 VIDEO — японское ASCII-видео</title>
+<style>
+  :root{
+    --red:#e03a3a;
+    --red-bright:#ff5555;
+    --red-dim:#7a1c1c;
+    --red-soft:#ffb0b0;
+    --panel:rgba(10,0,0,.68);
+    --border:rgba(224,58,58,.30);
+    --border-hi:rgba(224,58,58,.65);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:#000;
+    color:#d8b4b4;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size:15px;
+    line-height:1.5;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  #bg{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    z-index:0;
+    display:block;
+    opacity:.42;
+    pointer-events:none;
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(0,0,0,.55) 75%, #000 100%);
+  }
+
+  .wrap{
+    position:relative; z-index:2;
+    max-width:1180px;
+    margin:0 auto;
+    padding:30px 16px 90px;
+  }
+
+  .hero{text-align:center; margin-bottom:28px;}
+  .hero h1{
+    margin:0 0 10px;
+    font-size:clamp(24px, 6vw, 46px);
+    letter-spacing:.14em;
+    font-weight:700;
+    color:var(--red-bright);
+    text-shadow:0 0 8px rgba(255,60,60,.55), 0 0 28px rgba(255,40,40,.30);
+  }
+  .hero h1 span{color:#5c1414;}
+  .hero p{
+    margin:0;
+    font-size:clamp(12px,3.4vw,15px);
+    color:#9a6a6a;
+    letter-spacing:.04em;
+  }
+
+  .drop{
+    padding:44px 20px;
+    text-align:center;
+    border:1.5px dashed var(--border-hi);
+    border-radius:14px;
+    cursor:pointer;
+    transition:background .18s, border-color .18s, transform .12s;
+    background:var(--panel);
+  }
+  .drop:hover, .drop.over{
+    background:rgba(70,8,8,.35);
+    border-color:#ff5a5a;
+  }
+  .drop.over{transform:scale(1.01)}
+  .drop .ico{
+    font-size:34px; line-height:1;
+    color:var(--red-bright);
+    text-shadow:0 0 14px rgba(255,60,60,.7);
+    margin-bottom:14px;
+  }
+  .drop .t{font-size:clamp(15px,4vw,18px); color:#ffc9c9; letter-spacing:.06em}
+  .drop .s{font-size:12px; color:#8d5b5b; margin-top:6px}
+  .drop .hint{
+    margin-top:18px; font-size:11px; color:#6b4545;
+    max-width:520px; margin-left:auto; margin-right:auto;
+  }
+
+  .studio{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 340px;
+    gap:16px;
+    align-items:start;
+    margin-top:6px;
+  }
+  @media(max-width:900px){
+    .studio{grid-template-columns:1fr;}
+  }
+
+  .stage{
+    position:relative;
+    background:#000;
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 0 0 1px rgba(0,0,0,.8), 0 0 40px rgba(180,20,20,.10) inset;
+    min-height:120px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #out{
+    display:block;
+    width:100%;
+    height:auto;
+    image-rendering:auto;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
+  }
+  @media(min-width:901px){
+    .panel{position:sticky; top:16px;}
+  }
+
+  .field{margin-bottom:15px}
+  .field:last-child{margin-bottom:0}
+  .label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:#a06a6a; margin-bottom:7px;
+  }
+  .label b{color:var(--red-bright); font-weight:600; font-size:12px}
+
+  input[type=range]{
+    -webkit-appearance:none; appearance:none;
+    width:100%; height:22px; background:transparent; cursor:pointer; margin:0;
+  }
+  input[type=range]::-webkit-slider-runnable-track{
+    height:4px; background:#3a1010; border-radius:2px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--red-bright);
+    box-shadow:0 0 10px rgba(255,60,60,.9);
+    margin-top:-6px;
+  }
+  input[type=range]::-moz-range-track{
+    height:4px; background:#3a1010; border-radius:2px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px; height:16px; border:0; border-radius:50%;
+    background:var(--red-bright);
+    box-shadow:0 0 10px rgba(255,60,60,.9);
+  }
+
+  select{
+    width:100%;
+    background:#120404;
+    color:#ffc9c9;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:9px 10px;
+    font-family:inherit;
+    font-size:13px;
+    outline:none;
+  }
+  select:focus{border-color:var(--border-hi)}
+  select option{background:#120404}
+
+  .swatches{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:7px;
+  }
+  .sw{
+    aspect-ratio:1 / 1;
+    width:100%;
+    border-radius:8px; cursor:pointer;
+    border:2px solid transparent;
+    transition:transform .12s, border-color .12s, box-shadow .12s;
+    position:relative;
+  }
+  .sw:hover{transform:scale(1.10)}
+  .sw.active{
+    border-color:#fff;
+    transform:scale(1.10);
+    box-shadow:0 0 0 1px #000, 0 0 14px rgba(255,255,255,.45);
+  }
+
+  .check{
+    display:flex; align-items:center; gap:9px;
+    font-size:12.5px; color:#c79a9a; cursor:pointer; user-select:none;
+  }
+  .check input{
+    -webkit-appearance:none; appearance:none;
+    width:17px; height:17px; border-radius:4px;
+    border:1px solid var(--border-hi);
+    background:#120404; cursor:pointer; position:relative; flex:0 0 auto;
+  }
+  .check input:checked{background:var(--red); border-color:var(--red)}
+  .check input:checked::after{
+    content:''; position:absolute; left:5px; top:1.5px;
+    width:5px; height:9px;
+    border:solid #150000; border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  .check + .check{margin-top:8px}
+
+  .btns{display:flex; flex-direction:column; gap:9px; margin-top:16px}
+
+  button{
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:12px 14px;
+    border-radius:9px;
+    border:1px solid var(--border-hi);
+    background:transparent;
+    color:#ffc0c0;
+    cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s, transform .08s;
+  }
+  button:hover:not(:disabled){
+    background:rgba(224,58,58,.16);
+    box-shadow:0 0 18px rgba(224,58,58,.28);
+  }
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.35; cursor:not-allowed}
+  button.primary{
+    background:linear-gradient(180deg,#c72c2c,#8c1414);
+    border-color:#ff5555;
+    color:#fff;
+    font-weight:600;
+    box-shadow:0 0 22px rgba(224,58,58,.35);
+  }
+  button.primary:hover:not(:disabled){
+    background:linear-gradient(180deg,#e03535,#a01818);
+    box-shadow:0 0 30px rgba(255,70,70,.5);
+  }
+  button.ghost{border-color:rgba(224,58,58,.22); color:#a97a7a}
+
+  .progress{
+    margin-top:14px;
+    height:5px; border-radius:3px; background:#2a0c0c; overflow:hidden;
+  }
+  .progress i{
+    display:block; height:100%; width:0%;
+    background:linear-gradient(90deg,#8c1414,#ff5555);
+    box-shadow:0 0 12px rgba(255,70,70,.8);
+    transition:width .15s linear;
+  }
+  .status{
+    margin-top:9px; font-size:11.5px; color:#966363; text-align:center; min-height:16px;
+    letter-spacing:.04em;
+  }
+  .status.ok{color:#7ec87e}
+  .status.err{color:#ff8a8a}
+  .status.warn{color:#e0c23a}
+
+  .filemeta{
+    font-size:11px; color:#7a5050; text-align:center; margin-top:10px;
+    word-break:break-all; line-height:1.45;
+  }
+
+  .result{margin-top:18px; display:none}
+  .result.show{display:block}
+  .result video{
+    width:100%; border-radius:10px; display:block;
+    border:1px solid var(--border); background:#000;
+  }
+  .result .dl{
+    display:block; text-align:center; margin-top:12px; text-decoration:none;
+    padding:13px; border-radius:9px;
+    background:linear-gradient(180deg,#c72c2c,#8c1414);
+    border:1px solid #ff5555; color:#fff;
+    font-size:13px; letter-spacing:.08em; text-transform:uppercase; font-weight:600;
+    box-shadow:0 0 22px rgba(224,58,58,.35);
+  }
+  .result .dl:hover{background:linear-gradient(180deg,#e03535,#a01818)}
+
+  footer{
+    text-align:center; margin-top:44px;
+    font-size:11px; color:#5a3838; letter-spacing:.06em; position:relative; z-index:2;
+  }
+
+  #srcVideo{
+    position:absolute; left:-9999px; top:0;
+    width:2px; height:2px; opacity:0; pointer-events:none;
+  }
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="vignette"></div>
+<video id="srcVideo" playsinline webkit-playsinline muted></video>
+
+<div class="wrap">
+
+  <header class="hero">
+    <h1>VSCII<span>·</span>VIDEO</h1>
+    <p>Загрузи видео — получи то же самое, но собранное из японских иероглифов</p>
+  </header>
+
+  <section id="uploadCard">
+    <div class="drop" id="drop">
+      <div class="ico">▲</div>
+      <div class="t">Перетащи видео сюда</div>
+      <div class="s">или нажми, чтобы выбрать файл</div>
+      <div class="hint">MP4 · WebM · MOV · MKV — всё обрабатывается прямо в браузере, файл никуда не отправляется</div>
+    </div>
+    <input type="file" id="fileInput" accept="video/*" hidden>
+  </section>
+
+  <section class="studio" id="studio" hidden>
+
+    <div class="stage">
+      <canvas id="out"></canvas>
+    </div>
+
+    <aside class="panel">
+      <div class="field">
+        <div class="label"><span>Плотность символов</span><b id="colsVal">110</b></div>
+        <input type="range" id="cols" min="40" max="220" step="2" value="110">
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Набор иероглифов</span></div>
+        <select id="charset">
+          <option value="katakana" selected>カタカナ — катакана</option>
+          <option value="hiragana">ひらがな — хирагана</option>
+          <option value="kanji">漢字 — кандзи</option>
+          <option value="mixed">和 — японский микс</option>
+          <option value="matrix">ﾏﾄﾘｯｸｽ — матрица (半角)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Цвет символов</span></div>
+        <div class="swatches" id="swatches">
+          <div class="sw active" data-color="#e03a3a" style="background:#e03a3a" title="Красный"></div>
+          <div class="sw" data-color="#ff5555" style="background:#ff5555" title="Ярко-красный"></div>
+          <div class="sw" data-color="#ff6b3d" style="background:#ff6b3d" title="Оранжевый"></div>
+          <div class="sw" data-color="#ffb03a" style="background:#ffb03a" title="Янтарный"></div>
+          <div class="sw" data-color="#e0c23a" style="background:#e0c23a" title="Жёлтый"></div>
+          <div class="sw" data-color="#b6e03a" style="background:#b6e03a" title="Лайм"></div>
+
+          <div class="sw" data-color="#3ae06b" style="background:#3ae06b" title="Зелёный"></div>
+          <div class="sw" data-color="#3ae0c2" style="background:#3ae0c2" title="Бирюзовый"></div>
+          <div class="sw" data-color="#3ac9e0" style="background:#3ac9e0" title="Голубой"></div>
+          <div class="sw" data-color="#4a7dff" style="background:#4a7dff" title="Синий"></div>
+          <div class="sw" data-color="#a55cff" style="background:#a55cff" title="Фиолетовый"></div>
+          <div class="sw" data-color="#ff4de0" style="background:#ff4de0" title="Маджента"></div>
+
+          <div class="sw" data-color="#ff69b4" style="background:#ff69b4" title="Розовый"></div>
+          <div class="sw" data-color="#ff9ecb" style="background:#ff9ecb" title="Нежный розовый"></div>
+          <div class="sw" data-color="#c77dff" style="background:#c77dff" title="Лавандовый"></div>
+          <div class="sw" data-color="#8a2be2" style="background:#8a2be2" title="Тёмно-фиолетовый"></div>
+          <div class="sw" data-color="#ffffff" style="background:#ffffff" title="Белый"></div>
+          <div class="sw" data-color="#c9c9c9" style="background:#c9c9c9" title="Серый"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Качество вывода</span></div>
+        <select id="quality">
+          <option value="960">960 px — быстро</option>
+          <option value="1280" selected>1280 px — стандарт</option>
+          <option value="1600">1600 px — высокое</option>
+          <option value="1920">1920 px — максимум</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="inverted">
+          <span>Инверсия (тёмное → плотные иероглифы)</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="withAudio" checked>
+          <span>Сохранять звук в видео</span>
+        </label>
+      </div>
+
+      <div class="btns">
+        <button class="primary" id="btnRender">▶ Отрендерить видео</button>
+        <button id="btnPreview">Воспроизвести превью</button>
+        <button class="ghost" id="btnReset">Выбрать другое видео</button>
+      </div>
+
+      <div class="progress"><i id="bar"></i></div>
+      <div class="status" id="status"></div>
+      <div class="filemeta" id="meta"></div>
+
+      <div class="result" id="result">
+        <video id="resultVideo" controls playsinline></video>
+        <a class="dl" id="dlLink" download="video-jp.mp4">⬇ Скачать видео</a>
+      </div>
+    </aside>
+
+  </section>
+
+  <footer>работает локально в браузере · WebCodecs / MediaRecorder</footer>
+</div>
+
+<script type="module">
+/* =========================================================
+   ЗАГРУЗЧИКИ МУКСЕРОВ
+   ========================================================= */
+let _mp4Mod = null;
+async function getMp4Muxer(){
+  if (_mp4Mod) return _mp4Mod;
+  _mp4Mod = await import('https://cdn.jsdelivr.net/npm/mp4-muxer@5/+esm');
+  return _mp4Mod;
+}
+let _webmMod = null;
+async function getWebmMuxer(){
+  if (_webmMod) return _webmMod;
+  _webmMod = await import('https://cdn.jsdelivr.net/npm/webm-muxer@5/+esm');
+  return _webmMod;
+}
+
+
+/* =========================================================
+   1. МАТРИЧНЫЙ ФОН
+   ========================================================= */
+const bgCanvas = document.getElementById('bg');
+const bgCtx    = bgCanvas.getContext('2d');
+const BG_GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン'.split('');
+
+let bgW = 0, bgH = 0, bgFont = 16, bgCols = [], lastBg = 0;
+
+function bgResize(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  bgW = Math.floor(window.innerWidth  * dpr);
+  bgH = Math.floor(window.innerHeight * dpr);
+  bgCanvas.width  = bgW;
+  bgCanvas.height = bgH;
+  bgCanvas.style.width  = window.innerWidth  + 'px';
+  bgCanvas.style.height = window.innerHeight + 'px';
+
+  const base = window.innerWidth < 640 ? 14 : 18;
+  bgFont = Math.max(11, Math.round(base * dpr));
+
+  const n = Math.ceil(bgW / bgFont);
+  bgCols = new Array(n);
+  for (let i = 0; i < n; i++) bgCols[i] = Math.floor(Math.random() * -60);
+
+  bgCtx.fillStyle = '#000';
+  bgCtx.fillRect(0, 0, bgW, bgH);
+}
+
+function bgTick(t){
+  requestAnimationFrame(bgTick);
+  if (t - lastBg < 55) return;
+  lastBg = t;
+
+  bgCtx.fillStyle = 'rgba(0,0,0,0.09)';
+  bgCtx.fillRect(0, 0, bgW, bgH);
+  bgCtx.font = 'bold ' + bgFont + 'px ui-monospace, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif';
+  bgCtx.textBaseline = 'top';
+
+  for (let i = 0; i < bgCols.length; i++){
+    const ch = BG_GLYPHS[(Math.random() * BG_GLYPHS.length) | 0];
+    const x  = i * bgFont;
+    const y  = bgCols[i] * bgFont;
+
+    if (y > -bgFont && y < bgH){
+      bgCtx.fillStyle = '#ff4d4d';
+      bgCtx.fillText(ch, x, y);
+    }
+    bgCols[i]++;
+    if (y > bgH && Math.random() > 0.972){
+      bgCols[i] = Math.floor(Math.random() * -25);
+    }
+  }
+}
+
+bgResize();
+requestAnimationFrame(bgTick);
+
+let bgRzT;
+window.addEventListener('resize', function(){
+  clearTimeout(bgRzT);
+  bgRzT = setTimeout(bgResize, 180);
+});
+
+
+/* =========================================================
+   2. ЯПОНСКИЙ ASCII-ДВИЖОК
+   ========================================================= */
+const FONT = '"Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans JP", "MS PGothic", ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+
+const CHARSETS = {
+  katakana: {
+    cjk: true,
+    chars: ' ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ'
+      .replace(/[ｦ-ﾟ]/g, function(m){ return String.fromCharCode(m.charCodeAt(0) + 0xFEC0); })
+  },
+  hiragana: {
+    cjk: true,
+    chars: ' ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをん'
+  },
+  kanji: {
+    cjk: true,
+    chars: ' 一丨丶丿乙二二十人口山夂女子宀寸小尢尸山工己巾干广廴廾弋弓彐彡彳心戈戸手支攴文斗斤方无日曰月木欠止歹殳毋比毛氏气水火爪父爻爿片牙牛犬玄玉瓜瓦甘生用田疋疒癶白皮皿目矛矢石示禸禾穴立竹米糸缶网羊羽老而耒耳聿肉臣自至臼舌舛舟艮色艸虍虫血行衣襾見角言谷豆豕豸貝赤走足身車辛辰辵邑酉釆里金長門阜隶隹雨青非面革韋韭音頁風飛食首香馬骨高髟鬥鬯鬲鬼魚鳥鹵鹿麥麻黃黍黒黹黽鼎鼓鼠鼻齊齒龍龜'
+  },
+  mixed: {
+    cjk: true,
+    chars: ' あいうえおアイウエオ山川田中人日目口国大中小上下左右水火木金土空天月花鳥風'
+  },
+  matrix: {
+    cjk: false,
+    chars: ' ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789'
+  }
+};
+
+const out      = document.getElementById('out');
+const octx     = out.getContext('2d');
+const sample   = document.createElement('canvas');
+const sctx     = sample.getContext('2d', { willReadFrequently: true });
+const measureC = document.createElement('canvas').getContext('2d');
+
+let atlas = null;
+let atlasCW = 8, atlasCH = 16;
+let gridCols = 0, gridRows = 0;
+let fontPx = 16;
+
+const state = {
+  cols      : 110,
+  charset   : 'katakana',
+  color     : '#e03a3a',
+  outWidth  : 1280,
+  withAudio : true,
+  inverted  : false,
+  loaded    : false,
+  rendering : false
+};
+
+function getChars(){
+  const set = CHARSETS[state.charset] || CHARSETS.katakana;
+  return set.chars;
+}
+
+function buildAtlas(){
+  const chars = getChars();
+  const cw = atlasCW, ch = atlasCH;
+
+  atlas = document.createElement('canvas');
+  atlas.width  = Math.max(1, cw * chars.length);
+  atlas.height = ch;
+
+  const g = atlas.getContext('2d');
+  g.fillStyle = state.color;
+  g.font = 'bold ' + fontPx + 'px ' + FONT;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+
+  for (let i = 0; i < chars.length; i++){
+    g.fillText(chars[i], i * cw + cw / 2, ch / 2 + ch * 0.02);
+  }
+}
+
+function setupGrid(){
+  const vw = video.videoWidth;
+  const vh = video.videoHeight;
+  if (!vw || !vh) return false;
+
+  const set = CHARSETS[state.charset] || CHARSETS.katakana;
+  const isCJK = set.cjk === true;
+
+  let cols = state.cols;
+  const MAX_CELLS = 9000;
+  let cellW, cellH;
+
+  if (isCJK){
+    const aspect = vh / vw;
+    const maxCols = Math.floor(Math.sqrt(MAX_CELLS / aspect));
+    if (cols > maxCols) cols = Math.max(24, maxCols);
+
+    gridCols = cols;
+    cellW = Math.max(4, Math.round(state.outWidth / gridCols));
+    cellH = cellW;
+    fontPx = Math.max(4, Math.round(cellW * 0.92));
+    atlasCW = cellW;
+    atlasCH = cellH;
+
+    gridRows = Math.max(1, Math.round(gridCols * aspect * (cellW / cellH)));
+  } else {
+    measureC.font = 'bold 200px ' + FONT;
+    const ratio = measureC.measureText('M').width / 200 || 0.6;
+
+    const aspect = vh / vw;
+    const maxCols = Math.floor(Math.sqrt(MAX_CELLS / (aspect * ratio)));
+    if (cols > maxCols) cols = Math.max(30, maxCols);
+
+    gridCols = cols;
+    atlasCW = Math.max(3, Math.round(state.outWidth / gridCols));
+    fontPx  = atlasCW / ratio;
+    atlasCH = Math.max(3, Math.round(fontPx));
+    cellW = atlasCW;
+    cellH = atlasCH;
+
+    gridRows = Math.max(1, Math.round(gridCols * aspect * (cellW / cellH)));
+  }
+
+  out.width  = Math.floor((gridCols * cellW) / 2) * 2;
+  out.height = Math.floor((gridRows * cellH) / 2) * 2;
+
+  sample.width  = gridCols;
+  sample.height = gridRows;
+
+  octx.imageSmoothingEnabled = true;
+  buildAtlas();
+  return true;
+}
+
+function renderFrame(){
+  if (!state.loaded) return;
+  const v = video;
+  if (v.readyState < 2 || !v.videoWidth) return;
+
+  sctx.drawImage(v, 0, 0, gridCols, gridRows);
+  const data = sctx.getImageData(0, 0, gridCols, gridRows).data;
+
+  octx.fillStyle = '#000000';
+  octx.fillRect(0, 0, out.width, out.height);
+
+  const chars = getChars();
+  const n = chars.length;
+  const cw = atlasCW, ch = atlasCH;
+  const spaceIsFirst = (chars[0] === ' ');
+  const invert = state.inverted;
+
+  for (let y = 0; y < gridRows; y++){
+    const rowOff = y * gridCols;
+    const py = y * ch;
+    for (let x = 0; x < gridCols; x++){
+      const i = (rowOff + x) * 4;
+
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+
+      let lum = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+      lum = lum * lum * (3 - 2 * lum);
+
+      if (invert) lum = 1 - lum;
+
+      let idx = (lum * n) | 0;
+      if (idx >= n) idx = n - 1;
+      if (idx === 0 && spaceIsFirst) continue;
+
+      octx.drawImage(atlas, idx * cw, 0, cw, ch, x * cw, py, cw, ch);
+    }
+  }
+}
+
+let rafId = null;
+function loop(){
+  rafId = null;
+  renderFrame();
+  const bar = document.getElementById('bar');
+  if (video.duration){
+    bar.style.width = ((video.currentTime / video.duration) * 100).toFixed(1) + '%';
+  }
+  if (!video.paused && !video.ended){
+    rafId = requestAnimationFrame(loop);
+  }
+}
+function startLoop(){
+  if (rafId === null) rafId = requestAnimationFrame(loop);
+}
+
+
+/* =========================================================
+   3. UI
+   ========================================================= */
+const video      = document.getElementById('srcVideo');
+const drop       = document.getElementById('drop');
+const fileInput  = document.getElementById('fileInput');
+const uploadCard = document.getElementById('uploadCard');
+const studio     = document.getElementById('studio');
+const statusEl   = document.getElementById('status');
+const metaEl     = document.getElementById('meta');
+const barEl      = document.getElementById('bar');
+const resultBox  = document.getElementById('result');
+const resultVid  = document.getElementById('resultVideo');
+const dlLink     = document.getElementById('dlLink');
+
+const btnRender  = document.getElementById('btnRender');
+const btnPreview = document.getElementById('btnPreview');
+const btnReset   = document.getElementById('btnReset');
+
+const colsSlider = document.getElementById('cols');
+const colsVal    = document.getElementById('colsVal');
+const charsetSel = document.getElementById('charset');
+const qualitySel = document.getElementById('quality');
+const audioChk   = document.getElementById('withAudio');
+const invertChk  = document.getElementById('inverted');
+
+let currentFile = null;
+let currentFileURL = null;
+let currentResultURL = null;
+
+function setStatus(msg, cls){
+  statusEl.textContent = msg || '';
+  statusEl.className = 'status' + (cls ? ' ' + cls : '');
+}
+
+function fmtTime(s){
+  if (!isFinite(s)) return '--:--';
+  const m = Math.floor(s / 60);
+  const ss = Math.floor(s % 60);
+  return m + ':' + (ss < 10 ? '0' : '') + ss;
+}
+
+function hasWebCodecs(){
+  return typeof window.VideoEncoder === 'function'
+      && typeof window.VideoFrame === 'function';
+}
+
+function loadFile(file){
+  if (!file) return;
+  if (!file.type.startsWith('video/') && !/\.(mp4|webm|mov|mkv|avi|m4v|ogv)$/i.test(file.name)){
+    setStatus('Это не похоже на видеофайл', 'err');
+    return;
+  }
+
+  if (currentFileURL) URL.revokeObjectURL(currentFileURL);
+  currentFileURL = URL.createObjectURL(file);
+  currentFile = file;
+
+  state.loaded = false;
+  if (currentResultURL){ URL.revokeObjectURL(currentResultURL); currentResultURL = null; }
+  resultBox.classList.remove('show');
+  resultVid.removeAttribute('src');
+  setStatus('');
+  barEl.style.width = '0%';
+
+  video.src = currentFileURL;
+  video.load();
+
+  uploadCard.hidden = true;
+  studio.hidden = false;
+  metaEl.textContent = file.name + ' · ' + (file.size / 1048576).toFixed(1) + ' МБ';
+}
+
+video.addEventListener('loadedmetadata', function(){
+  state.loaded = true;
+  metaEl.textContent = (metaEl.textContent.split(' · ')[0]) +
+                       ' · ' + fmtTime(video.duration) +
+                       ' · ' + video.videoWidth + '×' + video.videoHeight;
+
+  if (!setupGrid()) return;
+  video.currentTime = 0;
+
+  const once = function(){
+    video.removeEventListener('seeked', once);
+    renderFrame();
+  };
+  video.addEventListener('seeked', once);
+
+  if (video.duration > 300){
+    setStatus('Видео длинное — рендер может занять несколько минут', 'warn');
+  } else {
+    setStatus('Готово к рендеру', 'ok');
+  }
+});
+
+video.addEventListener('error', function(){
+  setStatus('Не удалось прочитать видео. Попробуй другой файл.', 'err');
+});
+
+drop.addEventListener('click', function(){ fileInput.click(); });
+
+['dragenter','dragover'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){
+    e.preventDefault(); e.stopPropagation();
+    drop.classList.add('over');
+  });
+});
+['dragleave','drop'].forEach(function(ev){
+  drop.addEventListener(ev, function(e){
+    e.preventDefault(); e.stopPropagation();
+    drop.classList.remove('over');
+  });
+});
+drop.addEventListener('drop', function(e){
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) loadFile(f);
+});
+
+fileInput.addEventListener('change', function(){
+  if (fileInput.files && fileInput.files[0]) loadFile(fileInput.files[0]);
+  fileInput.value = '';
+});
+
+let settingsTimer = null;
+function onSettingsChange(){
+  clearTimeout(settingsTimer);
+  settingsTimer = setTimeout(function(){
+    if (!state.loaded) return;
+    if (!setupGrid()) return;
+    renderFrame();
+  }, 120);
+}
+
+colsSlider.addEventListener('input', function(){
+  state.cols = parseInt(colsSlider.value, 10);
+  colsVal.textContent = state.cols;
+  onSettingsChange();
+});
+charsetSel.addEventListener('change', function(){
+  state.charset = charsetSel.value;
+  onSettingsChange();
+});
+qualitySel.addEventListener('change', function(){
+  state.outWidth = parseInt(qualitySel.value, 10);
+  onSettingsChange();
+});
+audioChk.addEventListener('change', function(){
+  state.withAudio = audioChk.checked;
+});
+invertChk.addEventListener('change', function(){
+  state.inverted = invertChk.checked;
+  if (state.loaded) renderFrame();
+});
+
+document.getElementById('swatches').addEventListener('click', function(e){
+  const sw = e.target.closest('.sw');
+  if (!sw) return;
+  document.querySelectorAll('.sw').forEach(function(s){ s.classList.remove('active'); });
+  sw.classList.add('active');
+  state.color = sw.dataset.color;
+  onSettingsChange();
+});
+
+btnPreview.addEventListener('click', function(){
+  if (!state.loaded || state.rendering) return;
+
+  if (!video.paused){
+    video.pause();
+    btnPreview.textContent = 'Воспроизвести превью';
+    return;
+  }
+  if (video.ended || video.currentTime >= video.duration - 0.05){
+    video.currentTime = 0;
+  }
+  video.muted = true;
+  const p = video.play();
+  if (p && p.catch) p.catch(function(){});
+  btnPreview.textContent = '⏸ Пауза';
+  startLoop();
+});
+video.addEventListener('play', function(){
+  startLoop();
+  btnPreview.textContent = '⏸ Пауза';
+});
+video.addEventListener('pause', function(){
+  btnPreview.textContent = 'Воспроизвести превью';
+});
+video.addEventListener('ended', function(){
+  btnPreview.textContent = 'Воспроизвести превью';
+  renderFrame();
+});
+
+btnReset.addEventListener('click', function(){
+  if (state.rendering) return;
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  state.loaded = false;
+  studio.hidden = true;
+  uploadCard.hidden = false;
+  setStatus('');
+  metaEl.textContent = '';
+  barEl.style.width = '0%';
+  if (currentResultURL){ URL.revokeObjectURL(currentResultURL); currentResultURL = null; }
+  resultBox.classList.remove('show');
+  resultVid.removeAttribute('src');
+  if (currentFileURL){ URL.revokeObjectURL(currentFileURL); currentFileURL = null; }
+  currentFile = null;
+  btnRender.disabled = false;
+  btnRender.textContent = '▶ Отрендерить видео';
+});
+
+
+/* =========================================================
+   4. ВЫБОР ЭНКОДЕРА С ФОЛБЭКАМИ
+   ========================================================= */
+
+// Проверяет пару видео+аудио кодеков. Возвращает описание или null.
+async function tryCombination(videoCodec, audioCodec, w, h, fps, bitrate){
+  try {
+    const vs = await VideoEncoder.isConfigSupported({
+      codec: videoCodec, width: w, height: h, bitrate: bitrate, framerate: fps
+    });
+    if (!vs || !vs.supported) return null;
+  } catch(e){ return null; }
+
+  let audioOk = false;
+  if (audioCodec){
+    try {
+      const as = await AudioEncoder.isConfigSupported({
+        codec: audioCodec, sampleRate: 48000,
+        numberOfChannels: 2, bitrate: 128000
+      });
+      audioOk = !!(as && as.supported);
+    } catch(e){ audioOk = false; }
+  }
+
+  return { videoCodec: videoCodec, audioCodec: audioOk ? audioCodec : null };
+}
+
+// Перебирает варианты: H.264/MP4 → VP9/WebM → VP8/WebM → AV1/WebM
+async function pickEncoder(w, h, fps, bitrate, wantAudio){
+  // --- MP4 / H.264 ---
+  const h264 = [
+    'avc1.640028','avc1.64001F','avc1.64001E',
+    'avc1.4D4028','avc1.4D401F','avc1.4D401E',
+    'avc1.42E028','avc1.42E01F','avc1.42E01E',
+    'avc1.42001E','avc1.42001F'
+  ];
+  for (const v of h264){
+    const r = await tryCombination(v, wantAudio ? 'mp4a.40.2' : null, w, h, fps, bitrate);
+    if (r){
+      return {
+        container: 'mp4',
+        ext: 'mp4',
+        videoCodec: r.videoCodec,
+        audioCodec: r.audioCodec,
+        vMux: 'avc',
+        aMux: r.audioCodec ? 'aac' : null
+      };
+    }
+  }
+
+  // --- WebM / VP9 ---
+  const vp9 = ['vp09.00.10.08','vp09.00.41.08','vp09.02.10.10'];
+  for (const v of vp9){
+    const r = await tryCombination(v, wantAudio ? 'opus' : null, w, h, fps, bitrate);
+    if (r){
+      return {
+        container: 'webm',
+        ext: 'webm',
+        videoCodec: r.videoCodec,
+        audioCodec: r.audioCodec,
+        vMux: 'V_VP9',
+        aMux: r.audioCodec ? 'A_OPUS' : null
+      };
+    }
+  }
+
+  // --- WebM / VP8 ---
+  {
+    const r = await tryCombination('vp8', wantAudio ? 'opus' : null, w, h, fps, bitrate);
+    if (r){
+      return {
+        container: 'webm',
+        ext: 'webm',
+        videoCodec: r.videoCodec,
+        audioCodec: r.audioCodec,
+        vMux: 'V_VP8',
+        aMux: r.audioCodec ? 'A_OPUS' : null
+      };
+    }
+  }
+
+  // --- WebM / AV1 ---
+  const av1 = ['av01.0.04M.08','av01.0.05M.08','av01.0.08M.08'];
+  for (const v of av1){
+    const r = await tryCombination(v, wantAudio ? 'opus' : null, w, h, fps, bitrate);
+    if (r){
+      return {
+        container: 'webm',
+        ext: 'webm',
+        videoCodec: r.videoCodec,
+        audioCodec: r.audioCodec,
+        vMux: 'V_AV1',
+        aMux: r.audioCodec ? 'A_OPUS' : null
+      };
+    }
+  }
+
+  return null;
+}
+
+
+/* =========================================================
+   5. РЕНДЕР (WebCodecs + муксер)
+   ========================================================= */
+function seekTo(t){
+  return new Promise(function(resolve, reject){
+    if (Math.abs(video.currentTime - t) < 1e-4){
+      resolve();
+      return;
+    }
+    const onSeeked = function(){
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+      resolve();
+    };
+    const onError = function(){
+      video.removeEventListener('seeked', onSeeked);
+      video.removeEventListener('error', onError);
+      reject(new Error('Ошибка перемотки'));
+    };
+    video.addEventListener('seeked', onSeeked);
+    video.addEventListener('error', onError);
+    video.currentTime = t;
+  });
+}
+
+async function decodeAudioFromFile(file){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  let ctx = null;
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    ctx = new AC();
+    const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+    return audioBuffer;
+  } catch (e){
+    console.warn('audio decode failed:', e);
+    return null;
+  } finally {
+    if (ctx && ctx.close) try { ctx.close(); } catch(e){}
+  }
+}
+
+// Пересэмплирование для Opus (требует 48000 Гц)
+async function resampleAudioBuffer(audioBuffer, targetSR){
+  if (audioBuffer.sampleRate === targetSR) return audioBuffer;
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!OAC) return audioBuffer;
+  try {
+    const length = Math.ceil(audioBuffer.duration * targetSR);
+    const offCtx = new OAC(audioBuffer.numberOfChannels, length, targetSR);
+    const src = offCtx.createBufferSource();
+    src.buffer = audioBuffer;
+    src.connect(offCtx.destination);
+    src.start(0);
+    return await offCtx.startRendering();
+  } catch(e){
+    console.warn('resample failed', e);
+    return audioBuffer;
+  }
+}
+
+async function encodeAudioBuffer(audioBuffer, encoder, channels, maxSamples){
+  const chunkSize = 8192;
+  const sr = audioBuffer.sampleRate;
+  const chData = [];
+  for (let i = 0; i < channels; i++) chData.push(audioBuffer.getChannelData(i));
+
+  for (let i = 0; i < maxSamples; i += chunkSize){
+    const n = Math.min(chunkSize, maxSamples - i);
+    const planar = new Float32Array(n * channels);
+    for (let ch = 0; ch < channels; ch++){
+      planar.set(chData[ch].subarray(i, i + n), ch * n);
+    }
+    const ad = new AudioData({
+      format: 'f32-planar',
+      sampleRate: sr,
+      numberOfFrames: n,
+      numberOfChannels: channels,
+      timestamp: Math.round(i / sr * 1e6),
+      data: planar
+    });
+    encoder.encode(ad);
+    ad.close();
+
+    if (encoder.encodeQueueSize > 30){
+      await new Promise(function(r){ setTimeout(r, 0); });
+      while (encoder.encodeQueueSize > 15){
+        await new Promise(function(r){ setTimeout(r, 5); });
+      }
+    }
+  }
+}
+
+async function renderToMp4(){
+  if (!state.loaded) return;
+  if (!hasWebCodecs()){
+    setStatus('WebCodecs недоступен — пробую MediaRecorder…', 'warn');
+    return renderWithMediaRecorder();
+  }
+
+  state.rendering = true;
+  btnRender.disabled = true;
+  btnPreview.disabled = true;
+  btnReset.disabled = true;
+  btnRender.textContent = '● Идёт рендер…';
+  setStatus('Подготовка…', '');
+  barEl.style.width = '0%';
+  resultBox.classList.remove('show');
+  if (currentResultURL){ URL.revokeObjectURL(currentResultURL); currentResultURL = null; }
+
+  video.pause();
+  video.muted = true;
+
+  if (!setupGrid()){
+    resetRenderUI('Не удалось рассчитать сетку', 'err');
+    return;
+  }
+
+  const FPS = 30;
+  const w = out.width;
+  const h = out.height;
+  const bitrate = w >= 1600 ? 12000000
+                : w >= 1280 ? 8000000
+                : 4500000;
+
+  let muxer = null;
+  let venc = null;
+  let aenc = null;
+  let audioBuffer = null;
+  let chosen = null;
+
+  try {
+    // --- 1. Подбор кодека ---
+    setStatus('Подбираю кодек…', '');
+    chosen = await pickEncoder(w, h, FPS, bitrate, state.withAudio);
+    if (!chosen){
+      console.warn('No WebCodecs encoder available, falling back to MediaRecorder');
+      setStatus('Кодеки WebCodecs недоступны — переключаюсь на MediaRecorder…', 'warn');
+      state.rendering = false;
+      return renderWithMediaRecorder();
+    }
+    console.log('Chosen encoder:', chosen);
+
+    // --- 2. Аудио ---
+    if (chosen.audioCodec && currentFile){
+      setStatus('Декодирую звук…', '');
+      audioBuffer = await decodeAudioFromFile(currentFile);
+      if (audioBuffer){
+        // Opus требует 48 кГц
+        if (chosen.audioCodec === 'opus'){
+          audioBuffer = await resampleAudioBuffer(audioBuffer, 48000);
+        }
+      }
+    }
+
+    // --- 3. Мукскер ---
+    let Muxer, ArrayBufferTarget, muxerConfig;
+
+    if (chosen.container === 'mp4'){
+      const m = await getMp4Muxer();
+      Muxer = m.Muxer;
+      ArrayBufferTarget = m.ArrayBufferTarget;
+
+      muxerConfig = {
+        target: new ArrayBufferTarget(),
+        video: { codec: 'avc', width: w, height: h },
+        fastStart: 'in-memory'
+      };
+      if (audioBuffer && audioBuffer.numberOfChannels > 0 && audioBuffer.length > 0){
+        muxerConfig.audio = {
+          codec: 'aac',
+          numberOfChannels: Math.min(2, audioBuffer.numberOfChannels),
+          sampleRate: audioBuffer.sampleRate
+        };
+      }
+    } else {
+      const m = await getWebmMuxer();
+      Muxer = m.Muxer;
+      ArrayBufferTarget = m.ArrayBufferTarget;
+
+      muxerConfig = {
+        target: new ArrayBufferTarget(),
+        video: { codec: chosen.vMux, width: w, height: h },
+        firstTimestampBehavior: 'offset'
+      };
+      if (audioBuffer && audioBuffer.numberOfChannels > 0 && audioBuffer.length > 0){
+        muxerConfig.audio = {
+          codec: 'A_OPUS',
+          numberOfChannels: Math.min(2, audioBuffer.numberOfChannels),
+          sampleRate: audioBuffer.sampleRate
+        };
+      }
+    }
+
+    muxer = new Muxer(muxerConfig);
+
+    // --- 4. Видеоэнкодер ---
+    const vcfg = {
+      codec: chosen.videoCodec,
+      width: w,
+      height: h,
+      bitrate: bitrate,
+      framerate: FPS,
+      latencyMode: 'quality'
+    };
+    if (chosen.videoCodec.startsWith('avc1')){
+      vcfg.avc = { format: 'avc' };
+    }
+
+    venc = new VideoEncoder({
+      output: function(chunk, meta){ muxer.addVideoChunk(chunk, meta); },
+      error: function(e){ console.error('VideoEncoder error', e); }
+    });
+    venc.configure(vcfg);
+
+    // --- 5. Аудиоэнкодер ---
+    let audioEncodePromise = Promise.resolve();
+    if (muxerConfig.audio){
+      const acfg = {
+        codec: chosen.audioCodec,
+        sampleRate: audioBuffer.sampleRate,
+        numberOfChannels: muxerConfig.audio.numberOfChannels,
+        bitrate: 128000
+      };
+      if (chosen.audioCodec === 'opus'){
+        acfg.bitrate = 96000;
+      }
+
+      aenc = new AudioEncoder({
+        output: function(chunk, meta){ muxer.addAudioChunk(chunk, meta); },
+        error: function(e){ console.error('AudioEncoder error', e); }
+      });
+      aenc.configure(acfg);
+
+      const maxSamples = Math.min(
+        audioBuffer.length,
+        Math.floor(video.duration * audioBuffer.sampleRate) + audioBuffer.sampleRate
+      );
+      audioEncodePromise = encodeAudioBuffer(audioBuffer, aenc, acfg.numberOfChannels, maxSamples);
+    }
+
+    // --- 6. Рендер кадров ---
+    const duration = video.duration;
+    const totalFrames = Math.max(1, Math.floor(duration * FPS));
+    const frameDurUs  = Math.round(1e6 / FPS);
+
+    for (let i = 0; i < totalFrames; i++){
+      const t = Math.min(i / FPS, Math.max(0, duration - 1e-3));
+
+      await seekTo(t);
+      renderFrame();
+
+      const ts = Math.round(t * 1e6);
+      const frame = new VideoFrame(out, {
+        timestamp: ts,
+        duration: frameDurUs
+      });
+      const keyFrame = (i % 60 === 0);
+      venc.encode(frame, { keyFrame: keyFrame });
+      frame.close();
+
+      if (venc.encodeQueueSize > 10){
+        while (venc.encodeQueueSize > 5){
+          await new Promise(function(r){ setTimeout(r, 5); });
+        }
+      }
+
+      const progress = (i + 1) / totalFrames;
+      barEl.style.width = (progress * 100).toFixed(1) + '%';
+      if (i % 3 === 0){
+        setStatus('Рендер кадров: ' + Math.round(progress * 100) + '%', '');
+      }
+      if (i % 5 === 0){
+        await new Promise(function(r){ setTimeout(r, 0); });
+      }
+    }
+
+    setStatus('Финализирую видеопоток…', '');
+    await venc.flush();
+
+    if (aenc){
+      setStatus('Финализирую звук…', '');
+      await audioEncodePromise;
+      await aenc.flush();
+    }
+
+    setStatus('Собираю файл…', '');
+    muxer.finalize();
+
+    const buffer = muxer.target.buffer;
+    const mimeType = chosen.container === 'mp4' ? 'video/mp4' : 'video/webm';
+    const blob = new Blob([buffer], { type: mimeType });
+
+    currentResultURL = URL.createObjectURL(blob);
+    resultVid.src = currentResultURL;
+
+    const baseName = ((currentFile && currentFile.name) || 'video').replace(/\.[^.]+$/, '');
+    const ext = chosen.ext;
+    dlLink.href = currentResultURL;
+    dlLink.download = baseName + '-jp.' + ext;
+    dlLink.textContent = '⬇ Скачать ' + ext.toUpperCase() +
+                         ' (' + (blob.size / 1048576).toFixed(1) + ' МБ)';
+    resultBox.classList.add('show');
+
+    barEl.style.width = '100%';
+
+    if (ext === 'mp4'){
+      setStatus('Готово! MP4 (H.264 + AAC) сохранён.', 'ok');
+    } else {
+      setStatus('Готово! Формат: ' + ext.toUpperCase() + ' (H.264 недоступен на этом устройстве).', 'warn');
+    }
+
+  } catch (e){
+    console.error(e);
+    // Если что-то упало на этапе WebCodecs — пробуем MediaRecorder
+    setStatus('WebCodecs не справился — переключаюсь на MediaRecorder…', 'warn');
+    try { if (venc) venc.close(); } catch(_){}
+    try { if (aenc) aenc.close(); } catch(_){}
+    state.rendering = false;
+    btnRender.disabled = false;
+    btnPreview.disabled = false;
+    btnReset.disabled = false;
+    return renderWithMediaRecorder();
+  }
+
+  state.rendering = false;
+  btnRender.disabled = false;
+  btnPreview.disabled = false;
+  btnReset.disabled = false;
+  btnRender.textContent = '▶ Отрендерить видео';
+
+  try { renderFrame(); } catch(e){}
+}
+
+function resetRenderUI(msg, cls){
+  state.rendering = false;
+  btnRender.disabled = false;
+  btnPreview.disabled = false;
+  btnReset.disabled = false;
+  btnRender.textContent = '▶ Отрендерить видео';
+  if (msg) setStatus(msg, cls);
+}
+
+
+/* =========================================================
+   6. РЕЗЕРВНЫЙ РЕНДЕР ЧЕРЕЗ MediaRecorder
+   ========================================================= */
+function pickRecorderMime(){
+  const list = [
+    'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+    'video/mp4;codecs=h264,aac',
+    'video/mp4',
+    'video/webm;codecs=vp9,opus',
+    'video/webm;codecs=vp8,opus',
+    'video/webm'
+  ];
+  if (!window.MediaRecorder) return '';
+  for (let i = 0; i < list.length; i++){
+    try {
+      if (MediaRecorder.isTypeSupported(list[i])) return list[i];
+    } catch(e){}
+  }
+  return '';
+}
+
+let _recChunks = [];
+let _recAudioCtx = null;
+let _recAudioSrc = null;
+let _recAudioDst = null;
+
+function renderWithMediaRecorder(){
+  if (!window.MediaRecorder || !out.captureStream){
+    resetRenderUI('Браузер не умеет записывать видео (нет WebCodecs и MediaRecorder).', 'err');
+    return;
+  }
+
+  state.rendering = true;
+  btnRender.disabled = true;
+  btnPreview.disabled = true;
+  btnReset.disabled = true;
+  btnRender.textContent = '● Идёт рендер…';
+  setStatus('Резервный рендер через MediaRecorder…', 'warn');
+  barEl.style.width = '0%';
+  resultBox.classList.remove('show');
+  if (currentResultURL){ URL.revokeObjectURL(currentResultURL); currentResultURL = null; }
+
+  video.pause();
+  video.muted = false;
+
+  if (!setupGrid()){
+    resetRenderUI('Не удалось рассчитать сетку', 'err');
+    return;
+  }
+
+  const stream = out.captureStream(30);
+
+  // Аудио из элемента video
+  if (state.withAudio){
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC){
+        _recAudioCtx = _recAudioCtx || new AC();
+        if (_recAudioCtx.state === 'suspended') _recAudioCtx.resume();
+
+        if (!_recAudioSrc){
+          _recAudioSrc = _recAudioCtx.createMediaElementSource(video);
+          _recAudioDst = _recAudioCtx.createMediaStreamDestination();
+          _recAudioSrc.connect(_recAudioDst);
+          _recAudioSrc.connect(_recAudioCtx.destination);
+        }
+        _recAudioDst.stream.getAudioTracks().forEach(function(t){ stream.addTrack(t); });
+      }
+    } catch(e){
+      console.warn('audio capture failed', e);
+    }
+  }
+
+  const mime = pickRecorderMime();
+  let recorder;
+  try {
+    recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+  } catch(e){
+    resetRenderUI('Не удалось запустить MediaRecorder: ' + e.message, 'err');
+    return;
+  }
+
+  _recChunks = [];
+  recorder.ondataavailable = function(e){
+    if (e.data && e.data.size) _recChunks.push(e.data);
+  };
+  recorder.onstop = function(){
+    const type = recorder.mimeType || 'video/webm';
+    const isMp4 = type.indexOf('mp4') !== -1;
+    const ext = isMp4 ? 'mp4' : 'webm';
+    const blob = new Blob(_recChunks, { type: type });
+    const url = URL.createObjectURL(blob);
+    currentResultURL = url;
+
+    resultVid.src = url;
+    const baseName = ((currentFile && currentFile.name) || 'video').replace(/\.[^.]+$/, '');
+    dlLink.href = url;
+    dlLink.download = baseName + '-jp.' + ext;
+    dlLink.textContent = '⬇ Скачать ' + ext.toUpperCase() +
+                         ' (' + (blob.size / 1048576).toFixed(1) + ' МБ)';
+    resultBox.classList.add('show');
+
+    barEl.style.width = '100%';
+    resetRenderUI(
+      isMp4 ? 'Готово! MP4 сохранён (MediaRecorder).'
+            : 'Готово! Сохранён WebM — этот браузер не умеет писать MP4.',
+      isMp4 ? 'ok' : 'warn'
+    );
+    try { renderFrame(); } catch(e){}
+  };
+
+  recorder.start(120);
+
+  video.currentTime = 0;
+  video.muted = false;
+  const p = video.play();
+  if (p && p.catch){
+    p.catch(function(err){
+      try { recorder.stop(); } catch(e){}
+      resetRenderUI('Не удалось воспроизвести видео: ' + err.message, 'err');
+    });
+  }
+  startLoop();
+
+  const onEnded = function(){
+    video.removeEventListener('ended', onEnded);
+    setTimeout(function(){
+      try { if (recorder.state !== 'inactive') recorder.stop(); } catch(e){}
+    }, 400);
+  };
+  video.addEventListener('ended', onEnded);
+}
+
+btnRender.addEventListener('click', renderToMp4);
+
+window.addEventListener('beforeunload', function(){
+  if (currentFileURL) try { URL.revokeObjectURL(currentFileURL); } catch(e){}
+  if (currentResultURL) try { URL.revokeObjectURL(currentResultURL); } catch(e){}
+});
+
+(function(){
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (isMobile){
+    state.cols = 90;
+    state.outWidth = 960;
+    colsSlider.value = 90;
+    colsVal.textContent = '90';
+    qualitySel.value = '960';
+  }
+})();
+
+</script>
+</body>
+</html>
